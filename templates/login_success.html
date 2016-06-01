@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+  <title>Zalogowanie pomyślne</title>
+  <meta charset="utf-8" />
+</head>
+<body>
+Logowanie przebiegło pomyślnie. Witaj {{ nick }}</br>
+Entropia Twojego hasla wynosi {{entr}}<br/>
+  <form action="/molasym/notatka/logout">
+    <input type="submit" value="Wyloguj">
+  </form>
+  <form action="/molasym/notatka/zmienhaslo">
+    <input type="submit" value="Zmien haslo">
+  </form>
+
+<br/><br/>
+  <form action="/molasym/notatka/notes" method='POST'>
+        <textarea name="link" style="width:250px;height:150px;"></textarea>
+	<input type="submit" value="Wyślij">
+  </form>
+  <br/>
+  Lista Twoich notatek<br/>
+  {% if link %}
+   {% for x in link %}
+    {{ x }} </br> 
+   {% endfor %}
+  {% endif %}
+  <br/> 
+
+</body>
+</html>
