@@ -5,6 +5,7 @@ from uuid import uuid4
 import random
 import string
 import hashlib
+import crypt
 import time 
 import os
 import math
@@ -70,8 +71,9 @@ entropie['Krystian'] = entropia('Bogusz')
 
 salt['Mateusz'] = ''.join(random.sample(string.ascii_letters, 2))
 salt['Krystian'] = ''.join(random.sample(string.ascii_letters, 2))
-listaUz['Mateusz'] = hashlib.sha512(salt['Mateusz'] + 'Molasy' ).hexdigest()
-listaUz['Krystian'] = hashlib.sha512(salt['Krystian'] + 'Bogusz' ).hexdigest()
+listaUz['Mateusz'] = crypt.crypt('Molasy', salt['Mateusz'])
+listaUz['Krystian'] = crypt.crypt('Bogusz', salt['Krystian'])
+
 
 
 #from werkzeug.debug import DebuggedApplication
@@ -118,9 +120,9 @@ def haslo():
      if len(newpassword) < 6:
        return "Haslo za krotkie - min 6 znakow"
      #repeat = request.form.get('repeat')
-     if listaUz[session['username']] == hashlib.sha512(salt[session['username']] + oldpassword ).hexdigest():
+     if listaUz[session['username']] == crypt.crypt(oldpassword, salt[session['username']]):
         salt[session['username']] = ''.join(random.sample(string.ascii_letters, 2))
-        listaUz[session['username']] = hashlib.sha512(salt[session['username']] + newpassword ).hexdigest()
+        listaUz[session['username']] = crypt.crypt(newpassword, salt[session['username']])
         entropie[session['username']] = entropia(newpassword)
         return render_template('login_success.html',link = notatkazal[session['username']], nick = session['username'], entr = round(entropie[session['username']], 2))
      else:
@@ -146,7 +148,7 @@ def login():
     if(znaleziono == 0):
       return render_template('login_failure.html')
     time.sleep(0.5)
-    if listaUz[username] == hashlib.sha512(salt[username] + password).hexdigest() and proby[username] <= 3:
+    if listaUz[username] == crypt.crypt(password, salt[username]) and proby[username] <= 3:
       proby[username]=0
       session['uid'] = uuid4()
       session['username'] = username
@@ -182,11 +184,12 @@ def newuser():
      if(znaleziono == 0):
         print 'lecimy dalej'
         salt[nazwauzytkownika] = ''.join(random.sample(string.ascii_letters, 2))
-        listaUz[nazwauzytkownika] = hashlib.sha512(salt[nazwauzytkownika] + haslo ).hexdigest()
+        listaUz[nazwauzytkownika] = crypt.crypt(haslo, salt[nazwauzytkownika])
 	entropie[nazwauzytkownika] = entropia(haslo)
         notatkazal[nazwauzytkownika] = []
 	proby[nazwauzytkownika] = 0
         return redirect(app_url + '/login')
  
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', debug = False/True, ssl_context=context)
+  app.run(host='0.0.0.0', 
+        debug = False/True, ssl_context=context)

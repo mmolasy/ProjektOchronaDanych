@@ -5,7 +5,15 @@
 </head>
 <body>
 Logowanie przebiegło pomyślnie. Witaj {{ nick }}</br>
+
+
 Entropia Twojego hasla wynosi {{entr}}<br/>
+{% if entr < 5 %}
+Jest to dobry wynik
+{% else %}
+Jest to zly wynik
+{% endif %}
+
   <form action="/molasym/notatka/logout">
     <input type="submit" value="Wyloguj">
   </form>
